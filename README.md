@@ -1,4 +1,12 @@
 **Django Polls Application**
+
+
+
+
+
+
+
+
 A modern, minimalistic web application for creating and managing polls built with Django. This application provides a clean, professional interface for poll creation, voting, and results visualization.
 **Features**
 	•	**Poll Management:** Create, edit, and delete polls with multiple choice options
