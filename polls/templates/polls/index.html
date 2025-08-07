@@ -345,13 +345,18 @@
 
             <!-- Conditional action buttons based on user role -->
             <div class="action-buttons">
-                {% if user.is_authenticated and user.groups.first.name == 'Admins' %}
+                {% if user.is_authenticated and user.is_superuser or user.is_authenticated and user.is_staff or user.is_authenticated and user.groups.first and user.groups.first.name == 'Admins' %}
                     <a href="{% url 'polls:addpoll' %}" class="btn btn-primary">
                         Add New Poll
                     </a>
                     <a href="{% url 'polls:editpoll' %}" class="btn btn-secondary">
                         Edit Polls
                     </a>
+                {% elif user.is_authenticated and user.groups.first.name == 'Admins' %}
+                    <a href="{% url 'polls:addpoll' %}" class="btn btn-primary">
+                        Add New Poll
+                    </a>
+                    <p class="voter-message">You can also manage existing polls.</p>
                 {% elif user.is_authenticated and user.groups.first.name == 'Voters' %}
                     <!-- Optional: Add voter-specific actions -->
                     <p class="voter-message">Select a poll above to cast your vote!</p>

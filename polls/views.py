@@ -51,8 +51,10 @@ def results(request, question_id):
 
 
 # Helper function to check if user is admin
+# Fixed version (works for both superusers and Admins group members)
 def is_admin(user):
-    return user.groups.filter(name='Admins').exists()
+    return user.is_superuser or user.is_staff .exists()
+
 
 
 @login_required
