@@ -29,7 +29,7 @@ A modern, minimalistic web application for creating and managing polls built wit
 ### Setup Instructions
 
 1. **Clone the repository**
-git clone https://github.com/yourusername/django-polls.git
+git clone https://github.com/Anoshpshroff/Django-polls.git
 cd django-polls
 
 2. **Create and activate virtual environment**
