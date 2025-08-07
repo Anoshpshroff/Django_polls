@@ -29,29 +29,38 @@ A modern, minimalistic web application for creating and managing polls built wit
 ### Setup Instructions
 
 1. **Clone the repository**
+
 git clone https://github.com/Anoshpshroff/Django-polls.git
+
 cd django-polls
 
 2. **Create and activate virtual environment**
 python3 -m venv venv source venv/bin/activate  # On macOS/Linux
 or
+
 venv\Scripts\activate  # On Windows
 
 3. **Install dependencies**
+
 pip install django
 
 4. **Run database migrations**
+
 python manage.py migrate
 
 5. **Create a superuser (optional)**
+
 python manage.py createsuperuser
 
 6. **Start the development server**
+
 python manage.py runserver
 
 
 7. **Access the application**
+
 - Main application: http://127.0.0.1:8000/polls/
+
 - Admin interface: http://127.0.0.1:8000/admin/
 
 ## Project Structure
