@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Poll</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 24px 0 16px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        input[type="text"], input[type="datetime-local"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus, input[type="datetime-local"]:focus, textarea:focus {
+            border-color: #6c757d;
+            box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+        }
+
+        .choice-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .choice-item input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .remove-choice-btn {
+            background: #fff5f5;
+            color: #e53e3e;
+            border: 1px solid #fed7d7;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 40px;
+        }
+
+        .remove-choice-btn:hover {
+            background: #fed7d7;
+            border-color: #fc8181;
+        }
+
+        .add-choice-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .add-choice-btn {
+            background: #e9ecef;
+            color: #2c3e50;
+            border: 1px solid #dee2e6;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .add-choice-btn:hover {
+            background: #dee2e6;
+            border-color: #adb5bd;
+        }
+
+        .create-btn {
+            background: #2c3e50;
+            color: white;
+            border: 1px solid #2c3e50;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .create-btn:hover {
+            background: #1a252f;
+            border-color: #1a252f;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #495057;
+        }
+
+        .initial-choices {
+            margin-bottom: 16px;
+        }
+
+        .error {
+            color: #e53e3e;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .choice-counter {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'polls:index' %}" class="back-link">← Back to Polls</a>
+        
+        <h2>Create a New Poll</h2>
+
+        <form method="post" id="pollForm">
+            {% csrf_token %}
+
+            <!-- Question Form -->
+            <div class="form-group">
+                <label for="id_question_text">Question Text:</label>
+                <input type="text" name="question_text" id="id_question_text" maxlength="200" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_pub_date">Publication Date:</label>
+                <input type="datetime-local" name="pub_date" id="id_pub_date" required>
+            </div>
+
+            <h3>Enter Choices: <span class="choice-counter" id="choiceCounter">(3 minimum)</span></h3>
+            
+            <!-- Initial formset choices -->
+            <div class="initial-choices">
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    <div class="choice-item">
+                        {{ form.choice_text }}
+                        {{ form.choice_text.errors }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Dynamic choices container -->
+            <div id="dynamicChoices"></div>
+
+            <!-- Add more choice button -->
+            <div class="add-choice-section">
+                <button type="button" class="add-choice-btn" onclick="addNewChoice()">+ Add Another Choice</button>
+                <p style="font-size: 0.8rem; color: #6c757d; margin-top: 8px;">You can add as many choices as needed</p>
+            </div>
+
+            <button type="submit" class="create-btn">Create Poll</button>
+        </form>
+    </div>
+
+    <script>
+        // Initialize choice counter
+        var choiceCount = 3; // Start with initial formset count
+        
+        function addNewChoice() {
+            var container = document.getElementById('dynamicChoices');
+            var choiceDiv = document.createElement('div');
+            choiceDiv.className = 'choice-item';
+            
+            choiceDiv.innerHTML = '<input type="text" name="extra_choice_' + choiceCount + '" placeholder="Enter choice text..." required>' +
+                                  '<button type="button" class="remove-choice-btn" onclick="removeChoice(this)">✕</button>';
+            
+            container.appendChild(choiceDiv);
+            choiceCount++;
+            updateChoiceCounter();
+        }
+
+        function removeChoice(button) {
+            button.parentNode.remove();
+            updateChoiceCounter();
+        }
+
+        function updateChoiceCounter() {
+            var totalChoices = document.querySelectorAll('.choice-item').length;
+            var counter = document.getElementById('choiceCounter');
+            counter.textContent = '(' + totalChoices + ' choices)';
+        }
+
+        // Set current date/time as default
+        document.addEventListener('DOMContentLoaded', function() {
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = String(now.getMonth() + 1).padStart(2, '0');
+            var day = String(now.getDate()).padStart(2, '0');
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            var datetime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            document.getElementById('id_pub_date').value = datetime;
+            
+            updateChoiceCounter();
+        });
+
+        // Handle form submission
+        document.getElementById('pollForm').addEventListener('submit', function(e) {
+            var extraInputs = document.querySelectorAll('input[name^="extra_choice_"]');
+            
+            extraInputs.forEach(function(input) {
+                if (input.value.trim()) {
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'dynamic_choices';
+                    hiddenInput.value = input.value.trim();
+                    this.appendChild(hiddenInput);
+                }
+            }.bind(this));
+        });
+    </script>
+</body>
+</html>

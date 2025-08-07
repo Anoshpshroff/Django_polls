@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - {{ question.question_text }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #495057;
+        }
+
+        .question-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            text-align: center;
+            line-height: 1.3;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+        }
+
+        .results-header h3 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .results-list {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            padding: 20px 24px;
+            transition: all 0.2s ease;
+        }
+
+        .result-item:hover {
+            border-color: #dee2e6;
+            background: #f1f3f4;
+        }
+
+        .choice-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .vote-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vote-count {
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .vote-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+            text-align: center;
+            border: none;
+            min-width: 140px;
+        }
+
+        .btn-primary {
+            background: #2c3e50;
+            color: white;
+            border: 1px solid #2c3e50;
+        }
+
+        .btn-primary:hover {
+            background: #1a252f;
+            border-color: #1a252f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            color: #495057;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .no-votes {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px;
+            background: #f8f9fa;
+            border: 1px dashed #dee2e6;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                margin: 10px;
+            }
+            
+            .question-title {
+                font-size: 1.4rem;
+                margin-bottom: 24px;
+            }
+            
+            .result-item {
+                padding: 16px 20px;
+            }
+            
+            .choice-text {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            .vote-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'polls:index' %}" class="back-link">← Back to Polls</a>
+        
+        <h1 class="question-title">{{ question.question_text }}</h1>
+        
+        <div class="results-header">
+            <h3>Poll Results</h3>
+        </div>
+
+        {% if question.choice_set.all %}
+            <ul class="results-list">
+                {% for choice in question.choice_set.all %}
+                    <li class="result-item">
+                        <div class="choice-text">{{ choice.choice_text }}</div>
+                        <div class="vote-info">
+                            <span class="vote-count">
+                                {{ choice.votes }} vote{{ choice.votes|pluralize }}
+                            </span>
+                            <span class="vote-badge">
+                                {{ choice.votes }} votes
+                            </span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-votes">
+                No choices available for this poll.
+            </div>
+        {% endif %}
+
+        <div class="action-buttons">
+            <a href="{% url 'polls:detail' question.id %}" class="btn btn-primary">
+                Vote Again
+            </a>
+            <a href="{% url 'polls:index' %}" class="btn btn-secondary">
+                View All Polls
+            </a>
+        </div>
+    </div>
+</body>
+</html>
