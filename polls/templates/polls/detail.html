@@ -19,6 +19,31 @@
             color: #2c3e50;
             line-height: 1.6;
         }
+        .already-voted {
+            text-align: center;
+            padding: 32px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .already-voted h3 {
+            color: #2c3e50;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+
+        .already-voted p {
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .already-voted strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
 
         .container {
             max-width: 600px;
@@ -244,26 +269,44 @@
                 </div>
             {% endif %}
             
-            <div class="poll-info">
-                <p>Choose your answer from the options below</p>
-                <p class="choice-count">{{ question.choice_set.count }} choice{{ question.choice_set.count|pluralize }} available</p>
-            </div>
-            
-            <div class="choices-container">
-                {% for choice in question.choice_set.all %}
-                    <div class="choice-option" onclick="selectChoice(this)">
-                        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-                        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+            {% if user_vote %}
+                <!-- User has already voted -->
+                <div class="already-voted">
+                    <h3>You have already voted on this poll!</h3>
+                    <p>Your choice: <strong>{{ user_vote.choice.choice_text }}</strong></p>
+                    <p>Voted on: {{ user_vote.voted_at|date:"F j, Y g:i A" }}</p>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'polls:results' question.id %}" class="btn btn-primary">
+                            View Results
+                        </a>
+                        <a href="{% url 'polls:index' %}" class="btn btn-secondary">
+                            Back to Polls
+                        </a>
                     </div>
-                {% endfor %}
-            </div>
-            
-            <button type="submit" class="vote-button" id="submitBtn" disabled>
-                Cast Your Vote
-            </button>
+                </div>
+            {% else %}
+                <!-- User hasn't voted yet -->
+                <div class="poll-info">
+                    <p>Choose your answer from the options below</p>
+                    <p class="choice-count">{{ question.choice_set.count }} choice{{ question.choice_set.count|pluralize }} available</p>
+                </div>
+                
+                <div class="choices-container">
+                    {% for choice in question.choice_set.all %}
+                        <div class="choice-option" onclick="selectChoice(this)">
+                            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                 <button type="submit" class="vote-button" id="submitBtn" disabled>
+                    Cast Your Vote
+                </button>
+            {% endif %}
         </form>
     </div>
-
+</body>
     <script>
         function selectChoice(choiceDiv) {
             // Remove selected class from all choices

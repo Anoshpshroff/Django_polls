@@ -1,11 +1,16 @@
-from django.shortcuts import get_object_or_404, render , redirect
-from django.http import HttpResponse , HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.http import Http404
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .models import Choice, Question
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import Group  # Add this import
+from django.db import IntegrityError
+from .models import Choice, Question, Vote
 from .forms import QuestionForm, ChoiceFormSet
 
 
@@ -21,38 +26,89 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
-
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Check if current user has voted on this question
+        if self.request.user.is_authenticated:
+            user_vote = Vote.objects.filter(
+                user=self.request.user, 
+                question=self.object
+            ).first()
+            context['user_vote'] = user_vote
+        
+        return context
+    
 class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
 
-def vote(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = question.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
-            'question': question,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
-    
+
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     return render(request, 'polls/results.html', {'question': question})
 
-def create(request):
-    # Your logic here (render the form, process submission, etc.)
-    return render(request, 'polls/create.html')
 
+# Helper function to check if user is admin
+def is_admin(user):
+    return user.groups.filter(name='Admins').exists()
+
+
+@login_required
+def vote(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    
+    # Handle non-POST requests
+    if request.method != 'POST':
+        return redirect('polls:detail', question_id=question_id)
+    
+    # Check if user has already voted on this question
+    existing_vote = Vote.objects.filter(user=request.user, question=question).first()
+    if existing_vote:
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': f"You have already voted on this poll. You selected '{existing_vote.choice.choice_text}'.",
+        })
+    
+    # Get choice ID from POST data
+    choice_id = request.POST.get('choice')
+    
+    # Check if choice was provided
+    if not choice_id:
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': "You didn't select a choice.",
+        })
+    
+    # Try to get the selected choice
+    try:
+        selected_choice = question.choice_set.get(pk=choice_id)
+    except Choice.DoesNotExist:
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': "Invalid choice selected.",
+        })
+    
+    # Create vote record and increment choice votes
+    try:
+        Vote.objects.create(
+            user=request.user,
+            question=question,
+            choice=selected_choice
+        )
+        selected_choice.votes += 1
+        selected_choice.save()
+        
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+    except IntegrityError:
+        # Handle race condition - user somehow voted twice simultaneously
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': "You have already voted on this poll.",
+        })
+@login_required
+@user_passes_test(is_admin)
 def create_poll(request):
     if request.method == 'POST':
         # Create question manually from form data
@@ -95,7 +151,10 @@ def create_poll(request):
         'question_form': question_form,
         'formset': formset
     })
-    
+
+
+@login_required
+@user_passes_test(is_admin)
 def edit_polls(request):
     """View to manage questions and choices - add or delete them"""
     questions = Question.objects.all().order_by('-pub_date')
@@ -124,3 +183,18 @@ def edit_polls(request):
             return redirect('polls:editpoll')
     
     return render(request, 'polls/edit_polls.html', {'questions': questions})
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Automatically assign to Voters group
+            voters_group, created = Group.objects.get_or_create(name='Voters')
+            user.groups.add(voters_group)
+            login(request, user)  # Auto-login after registration
+            return redirect('polls:index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})

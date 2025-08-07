@@ -24,6 +24,49 @@
             max-width: 800px;
             margin: 0 auto;
         }
+        .user-info {
+            text-align: center;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+
+        .user-info p {
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+            font-weight: 500;
+        }
+
+        .role-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .logout-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .logout-link:hover {
+            color: #495057;
+        }
+
+        .voter-message {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            margin: 0;
+            padding: 12px;
+        }
 
         .header {
             text-align: center;
@@ -194,6 +237,7 @@
             font-size: 2rem;
             font-weight: 300;
         }
+        
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -259,6 +303,17 @@
         <div class="header">
             <h1>Polling Dashboard</h1>
             <p>Create, manage, and vote on polls</p>
+            
+            <!-- Add user info section -->
+            {% if user.is_authenticated %}
+                <div class="user-info">
+                    <p>Welcome, {{ user.username }}!</p>
+                    {% if user.groups.first %}
+                        <span class="role-badge">{{ user.groups.first.name }}</span>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+                </div>
+            {% endif %}
         </div>
 
         <div class="polls-container">
@@ -284,19 +339,32 @@
             {% else %}
                 <div class="no-polls">
                     No polls are available yet.<br>
-                    <small>Create your first poll to get started!</small>
+                    <small>{% if user.groups.first.name == 'Admins' %}Create your first poll to get started!{% else %}Check back later for new polls!{% endif %}</small>
                 </div>
             {% endif %}
 
+            <!-- Conditional action buttons based on user role -->
             <div class="action-buttons">
-                <a href="{% url 'polls:addpoll' %}" class="btn btn-primary">
-                    Add New Poll
-                </a>
-                <a href="{% url 'polls:editpoll' %}" class="btn btn-secondary">
-                    Edit Polls
-                </a>
+                {% if user.is_authenticated and user.groups.first.name == 'Admins' %}
+                    <a href="{% url 'polls:addpoll' %}" class="btn btn-primary">
+                        Add New Poll
+                    </a>
+                    <a href="{% url 'polls:editpoll' %}" class="btn btn-secondary">
+                        Edit Polls
+                    </a>
+                {% elif user.is_authenticated and user.groups.first.name == 'Voters' %}
+                    <!-- Optional: Add voter-specific actions -->
+                    <p class="voter-message">Select a poll above to cast your vote!</p>
+                {% else %}
+                    <!-- User not logged in -->
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        Login to Vote
+                    </a>
+                    <a href="{% url 'polls:register' %}" class="btn btn-secondary">
+                        Register
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
 </body>
-</html>
