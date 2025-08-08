@@ -12,16 +12,38 @@ from django.contrib.auth.models import Group  # Add this import
 from django.db import IntegrityError
 from .models import Choice, Question, Vote
 from .forms import QuestionForm, ChoiceFormSet
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
+from django.db.models import Q
 
-
-class IndexView(generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'
-
+    paginate_by = 5
+    
     def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by('-pub_date')[:5]
-
+        """Return questions filtered by search query if provided."""
+        queryset = Question.objects.order_by('-pub_date')
+        
+        # Get search query from URL parameters
+        search_query = self.request.GET.get('search', '')
+        
+        if search_query:
+            # Search in question text (case-insensitive)
+            queryset = queryset.filter(
+                question_text__icontains=search_query
+            )
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['is_admin'] = is_admin(self.request.user)
+        
+        # Pass search query to template to maintain it in the search box
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
 
 class DetailView(generic.DetailView):
     model = Question
@@ -200,3 +222,18 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+def get_queryset(self):
+    """Return questions with enhanced search capabilities."""
+    queryset = Question.objects.order_by('-pub_date')
+    
+    search_query = self.request.GET.get('search', '').strip()
+    
+    if search_query:
+        # Search in both question text and choice text
+        queryset = queryset.filter(
+            models.Q(question_text__icontains=search_query) |
+            models.Q(choice__choice_text__icontains=search_query)
+        ).distinct()
+    
+    return queryset

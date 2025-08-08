@@ -37,6 +37,175 @@
             margin: 0 0 8px 0;
             font-weight: 500;
         }
+        .pagination-container {
+            margin: 32px 0 24px 0;
+            text-align: center;
+            border-top: 1px solid #f1f3f4;
+            padding-top: 32px;
+        }
+
+        .pagination {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin: 0 auto;
+        }
+
+        .pagination-link {
+            padding: 12px 20px;
+            background: white;
+            color: #2c3e50;
+            text-decoration: none;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            min-width: 80px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .pagination-link:hover {
+            background: #2c3e50;
+            color: white;
+            border-color: #2c3e50;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        }
+
+        .pagination-link:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(44, 62, 80, 0.15);
+        }
+
+        .pagination-info {
+            color: #6c757d;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0 20px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .pagination-info strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* Current page indicator styling */
+        .pagination-current {
+            padding: 12px 20px;
+            background: #2c3e50;
+            color: white;
+            border: 1px solid #2c3e50;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Disabled state for navigation links */
+        .pagination-link.disabled {
+            background: #f8f9fa;
+            color: #adb5bd;
+            border-color: #e9ecef;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pagination-link.disabled:hover {
+            background: #f8f9fa;
+            color: #adb5bd;
+            border-color: #e9ecef;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 768px) {
+            .pagination-container {
+                margin: 24px 0 20px 0;
+                padding-top: 24px;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 16px 12px;
+                margin: 0 10px;
+            }
+            
+            .pagination-link {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+                min-width: 70px;
+            }
+            
+            .pagination-current {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+                min-width: 70px;
+            }
+            
+            .pagination-info {
+                width: 100%;
+                order: -1;
+                margin-bottom: 12px;
+                padding: 0 8px;
+                font-size: 0.85rem;
+                border-bottom: 1px solid #f1f3f4;
+                padding-bottom: 12px;
+            }
+            
+            /* Hide "First" and "Last" on very small screens */
+            .pagination-link[href*="page=1"]:first-of-type,
+            .pagination-link:last-of-type {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pagination {
+                padding: 12px 8px;
+            }
+            
+            .pagination-link,
+            .pagination-current {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                min-width: 60px;
+            }
+        }
+
+        /* Loading state animation */
+        .pagination-link:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        /* Smooth transitions */
+        .pagination-container {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         .role-badge {
             background: #2c3e50;
@@ -237,7 +406,162 @@
             font-size: 2rem;
             font-weight: 300;
         }
-        
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 32px auto;
+            padding: 0 20px;
+        }
+
+        .search-form {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            color: #2c3e50;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .search-button {
+            padding: 14px 24px;
+            background: #2c3e50;
+            color: white;
+            border: 1px solid #2c3e50;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .search-button:hover {
+            background: #1a252f;
+            border-color: #1a252f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+        }
+
+        .search-icon {
+            font-size: 1.1rem;
+        }
+
+        .search-results-info {
+            text-align: center;
+            padding-top: 16px;
+            border-top: 1px solid #f1f3f4;
+        }
+
+        .search-results-info p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .search-results-info strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .clear-search {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .clear-search:hover {
+            color: #1a252f;
+            text-decoration: underline;
+        }
+
+        /* Mobile responsive search */
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 0 10px;
+                margin-bottom: 24px;
+            }
+            
+            .search-form {
+                padding: 20px;
+            }
+            
+            .search-input-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .search-input {
+                padding: 12px 16px;
+            }
+            
+            .search-button {
+                padding: 12px 20px;
+                justify-content: center;
+            }
+            
+            .search-results-info {
+                text-align: left;
+            }
+            
+            .clear-search {
+                display: block;
+                margin-left: 0;
+                margin-top: 4px;
+            }
+        }
+
+        /* Search input animation */
+        .search-input:focus {
+            animation: searchFocus 0.3s ease forwards;
+        }
+
+        @keyframes searchFocus {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.01);
+            }
+        }
+
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -315,6 +639,37 @@
                 </div>
             {% endif %}
         </div>
+        <!-- Add this search section after the header div -->
+        <div class="search-container">
+            <form method="get" class="search-form" id="searchForm">
+                <div class="search-input-group">
+                    <input type="search" 
+                        name="search" 
+                        value="{{ search_query }}" 
+                        placeholder="Search polls..." 
+                        class="search-input"
+                        id="searchInput">
+                    <button type="submit" class="search-button">
+                        <span class="search-icon">🔍</span>
+                        Search
+                    </button>
+                </div>
+                
+                {% if search_query %}
+                    <div class="search-results-info">
+                        <p>
+                            {% if latest_question_list %}
+                                Found {{ paginator.count }} poll{{ paginator.count|pluralize }} for "<strong>{{ search_query }}</strong>"
+                            {% else %}
+                                No polls found for "<strong>{{ search_query }}</strong>"
+                            {% endif %}
+                            <a href="{% url 'polls:index' %}" class="clear-search">Clear search</a>
+                        </p>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+
 
         <div class="polls-container">
             {% if latest_question_list %}
@@ -341,6 +696,38 @@
                     No polls are available yet.<br>
                     <small>{% if user.groups.first.name == 'Admins' %}Create your first poll to get started!{% else %}Check back later for new polls!{% endif %}</small>
                 </div>
+            {% endif %}
+            <!-- Add this pagination section before the action-buttons div -->
+           
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <nav class="pagination">
+                    <div class="pagination-info">
+                        Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> 
+                        of <strong>{{ page_obj.paginator.count }}</strong> polls
+                    </div>
+                    
+                    <div class="pagination-controls">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1" class="pagination-link">First</a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">← Prev</a>
+                        {% else %}
+                            <span class="pagination-link disabled">First</span>
+                            <span class="pagination-link disabled">← Prev</span>
+                        {% endif %}
+                        
+                        <span class="pagination-current">{{ page_obj.number }}</span>
+                        
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next →</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Last</a>
+                        {% else %}
+                            <span class="pagination-link disabled">Next →</span>
+                            <span class="pagination-link disabled">Last</span>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
             {% endif %}
 
             <!-- Conditional action buttons based on user role -->
